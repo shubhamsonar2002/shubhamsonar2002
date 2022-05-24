@@ -1,0 +1,531 @@
+[5/24, 2:02 AM] shubham sonar: #include<bits/stdc++.h>
+
+using namespace std;
+
+bool issafe(vector<vector<int> > &g,int x,int y){
+
+	int n = g.size();	for(int i=0;i<y;i++){
+
+		if(g[x][i]){
+
+			return false;
+
+		}
+
+	}
+
+	for(int i=x,j=y;i>=0 and j>=0;i--,j--){
+
+		if(g[i][j]){
+
+			return false;
+
+		}
+
+	}
+
+	for(int i=x,j=y;i<n and j>=0;i++,j--){
+
+		if(g[i][j]){
+
+			return false;
+
+		}
+
+	}
+
+	return true;
+
+}
+
+bool nqueen(vector<vector<int> > &g,int col){
+
+	int n = g.size();
+
+	if(col >= n){
+
+		return true;
+
+	}
+
+	for(int i = 0;i<n;i++){
+
+		if(issafe(g,i,col)){
+
+			g[i][col] = 1;
+
+			if(nqueen(g,col+1)){
+
+				return true;
+
+			}
+
+			g[i][col] = 0;
+
+		}
+
+	}
+
+	return false;
+
+}
+
+int main(){
+
+	int n = 6;
+
+	vector<vector<int> > x;
+
+	for(int i=0;i<n;i++){
+
+		vector<int> o(n,0);
+
+		x.push_back(o);
+
+	}
+
+	cout << nqueen(x,0) << endl;;
+
+	for(int i=0;i<n;i++){
+
+		for(int j=0;j<n;j++){
+
+			cout << x[i][j] << " " ;
+
+		}
+
+		cout << endl;
+
+	}
+
+	//memset(board,0,sizeof(board));
+
+	
+
+}
+
+[5/24, 2:03 AM] shubham sonar: #include<bits/stdc++.h>
+
+using namespace std;
+
+class Graph{
+
+	vector<int> *adj;
+
+	int size;
+
+public:
+
+	Graph(int size){
+
+		this->size = size;
+
+		adj = new vector<int>[size];
+
+	}
+
+	void addEdge(int x,int y){
+
+		adj[x].push_back(y);
+
+		adj[y].push_back(x);
+
+	}
+
+	void dfs(int startnode){
+
+		stack<int> s;
+
+		s.push(startnode);
+
+		int visited[size] = {0};
+
+		while(!s.empty()){
+
+			int x = s.top();
+
+			s.pop();
+
+			cout << x << " ";
+
+			visited[x] = 1;
+
+			for(auto &y:adj[x]){
+
+				if(!visited[y]){
+
+					s.push(y);
+
+				}
+
+			}
+
+		}
+
+		cout << endl;
+
+	}
+
+	void bfs(int startnode){
+
+		queue<int> s;
+
+		s.push(startnode);
+
+		int visited[size] = {0};
+
+		while(!s.empty()){
+
+			int x = s.front();
+
+			s.pop();
+
+			cout << x << " ";
+
+			visited[x] = 1;
+
+			for(auto &y:adj[x]){
+
+				if(!visited[y]){
+
+					s.push(y);
+
+				}
+
+			}
+
+		}
+
+		cout << endl;
+
+	}
+
+	void primsMST(){
+
+		
+
+	}
+
+};
+
+int main(){
+
+	Graph x(4);
+
+	x.addEdge(3,1);
+
+	x.addEdge(3,2);
+
+	x.addEdge(2,0);
+
+	x.dfs(3);
+
+	x.bfs(3);
+
+}
+
+[5/24, 2:22 AM] shubham sonar: #include<bits/stdc++.h>
+
+using namespace std;
+
+/*
+
+author : shubham sonar
+
+*/
+
+#define ROW 9
+
+#define COL 10
+
+bool isnotsafe(int i,int j){
+
+	return !(i>=0 and j>=0 and i<ROW and j<COL);
+
+}
+
+bool isBlocked(int a[][COL],int i,int j){
+
+	if(a[i][j] == 1){
+
+		return false;
+
+	}
+
+	return true;
+
+}
+
+bool reached(pair <int,int> dist,pair<int,int> start){
+
+	return (dist.first == start.first) and (dist.second == start.second);
+
+}
+
+double EcluidDist(int srci,int srcj,pair<int,int> dist){
+
+	return sqrt((srci-dist.first)*(srci-dist.first) + (srcj-dist.second)*(srcj-dist.second));
+
+}
+
+bool isdest = false;
+
+void myfun(int grid[][COL],int x,int y,pair<int,int> dist,set<pair<double,pair<int,int>>> &openList,bool isvisited[][COL],double g,bool isroot){
+
+	if(isnotsafe(x,y)){
+
+		return;
+
+	}
+
+	if(isBlocked(grid,x,y)){
+
+		return;
+
+	}
+
+	if(isvisited[x][y]){
+
+		return;
+
+	}
+
+	if(reached(dist,{x,y})){
+
+		isdest = true;
+
+		cout << "(" <<  x << "," << y << ")";
+
+		return;
+
+	}
+
+	g += 1.0;
+
+	if(isroot){
+
+		g+=0.414;
+
+	}	
+
+	double h = g + EcluidDist(x,y,dist);
+
+	openList.insert({h,{x,y}});
+
+}
+
+void xfun(int grid[][COL],pair<int,int> start, pair<int,int> dist){
+
+	int x = start.first,y = start.second;
+
+	int x_dist = dist.first,y_dist = dist.second;
+
+	bool isvisited[ROW][COL];
+
+	for(int i=0;i<ROW;i++){
+
+		for(int j=0;j<COL;j++){
+
+			isvisited[i][j] = false;
+
+		}
+
+	}
+
+	double inidist = EcluidDist(x,y,dist);
+
+	set<pair<double,pair<int,int> > > openList;
+
+	openList.insert({inidist,{x,y}});
+
+	double g = 0.0;
+
+	while(!openList.empty()){
+
+		pair<double,pair<int ,int> > y = *openList.begin();
+
+		openList.erase(openList.begin());
+
+		isvisited[y.second.first][y.second.second] = true;
+
+		cout << "(" <<  y.second.first << "," << y.second.second << ") -> ";
+
+		int i = y.second.first ,j = y.second.second;
+
+		myfun(grid,i-1,j,dist,openList,isvisited,g,false);
+
+		if(isdest){
+
+			return;
+
+		}
+
+		myfun(grid,i,j-1,dist,openList,isvisited,g,false);
+
+		if(isdest){
+
+			return;
+
+		}
+
+		myfun(grid,i+1,j,dist,openList,isvisited,g,false);
+
+		if(isdest){
+
+			return;
+
+		}
+
+		myfun(grid,i,j+1,dist,openList,isvisited,g,false);
+
+		if(isdest){
+
+			return;
+
+		}
+
+		myfun(grid,i-1,j-1,dist,openList,isvisited,g,true);
+
+		if(isdest){
+
+			return;
+
+		}
+
+		myfun(grid,i+1,j+1,dist,openList,isvisited,g,true);
+
+		if(isdest){
+
+			return;
+
+		}
+
+		myfun(grid,i-1,j+1,dist,openList,isvisited,g,true);
+
+		if(isdest){
+
+			return;
+
+		}
+
+		myfun(grid,i+1,j-1,dist,openList,isvisited,g,true);
+
+		if(isdest){
+
+			return;
+
+		}
+
+	}
+
+}
+
+int main(){
+
+	int grid[ROW][COL]
+
+		= { { 1, 0, 1, 1, 1, 1, 0, 1, 1, 1 },
+
+			{ 1, 1, 1, 0, 1, 1, 1, 0, 1, 1 },
+
+			{ 1, 1, 1, 0, 1, 1, 0, 1, 0, 1 },
+
+			{ 0, 0, 1, 0, 1, 0, 0, 0, 0, 1 },
+
+			{ 1, 1, 1, 0, 1, 1, 1, 0, 1, 0 },
+
+			{ 1, 0, 1, 1, 1, 1, 0, 1, 0, 0 },
+
+			{ 1, 0, 0, 0, 0, 1, 0, 0, 0, 1 },
+
+			{ 1, 0, 1, 1, 1, 1, 0, 1, 1, 1 },
+
+			{ 1, 1, 1, 0, 0, 0, 1, 0, 0, 1 } };
+
+	xfun(grid,{0,0},{8,9});
+
+}
+
+[5/24, 2:23 AM] shubham sonar: #include<bits/stdc++.h>
+
+using namespace std;
+
+void printMST(int g[5][5]){
+
+	int parent[5];
+
+	priority_queue<pair<int,int>,vector<pair<int,int>>,greater< pair<int,int> > > pq;
+
+	int src = 0;
+
+	vector<int> key(5,INT_MAX);
+
+	bool inMST[5] = {false};
+
+	pq.push({0,src});
+
+	key[src] = 0;
+
+	while(!pq.empty()){
+
+		int u = pq.top().second;
+
+		pq.pop();
+
+		if(inMST[u]){
+
+			continue;
+
+		}
+
+		inMST[u] = true;
+
+		for(int i=0;i<5;i++){
+
+			if(g[u][i]!=0){
+
+				int weight = g[u][i];
+
+				if(inMST[i]==false and key[i]>weight){
+
+					key[i] = weight;
+
+					pq.push({key[i],i});
+
+					parent[i] = u;
+
+				}
+
+			}
+
+		}
+
+	}
+
+	
+
+	for(int i=1;i<5;i++){
+
+		printf("%d - %d -> %d\n",parent[i],i,g[i][parent[i]]);
+
+	}
+
+}
+
+int main(){
+
+	int graph[5][5] = { { 0, 2, 0, 6, 0 },
+
+                        { 2, 0, 3, 8, 5 },
+
+                        { 0, 3, 0, 0, 7 },
+
+                        { 6, 8, 0, 0, 9 },
+
+                        { 0, 5, 7, 9, 0 } };
+
+     printMST(graph);
+
+     return 0;
+
+}
